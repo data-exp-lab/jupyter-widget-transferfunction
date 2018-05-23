@@ -150,7 +150,7 @@ setup_args = {
         'jsdeps': NPM,
     },
 
-    'author': 'Matthew Turk',
+    'author': 'Matthew Turk, Anna Fruehstueck',
     'author_email': 'matthewturk@gmail.com',
     'url': 'https://github.com/data-exp-lab/jupyter_widget_transferfunction',
     'keywords': [

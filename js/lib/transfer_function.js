@@ -25,7 +25,8 @@ var TransferFunctionEditorModel = widgets.DOMWidgetModel.extend({
         _model_module : 'jupyter-widget-transferfunction',
         _view_module : 'jupyter-widget-transferfunction',
         _model_module_version : '0.1.0',
-        _view_module_version : '0.1.0'
+        _view_module_version : '0.1.0',
+        tf_values: undefined
     })
 });
 
@@ -59,10 +60,13 @@ var TransferFunctionEditorView = widgets.DOMWidgetView.extend({
         };
         this.tf_panel = new tfpanel.TF_panel(options);
         this.tf_panel.draw();
+        this.tf_panel.registerCallback(this.value_changed.bind(this));
     },
 
     value_changed: function() {
-        this.el.textContent = "hi there";
+        values = this.tf_panel.getTF();
+        this.model.set('tf_values', values);
+        this.model.save_changes();
     }
 });
 

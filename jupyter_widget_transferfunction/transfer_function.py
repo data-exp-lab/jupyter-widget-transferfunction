@@ -1,5 +1,5 @@
 import ipywidgets as widgets
-from traitlets import Unicode
+from traitlets import Unicode, List
 
 @widgets.register
 class TransferFunctionEditor(widgets.DOMWidget):
@@ -10,3 +10,4 @@ class TransferFunctionEditor(widgets.DOMWidget):
     _model_module = Unicode('jupyter-widget-transferfunction').tag(sync=True)
     _view_module_version = Unicode('^0.1.0').tag(sync=True)
     _model_module_version = Unicode('^0.1.0').tag(sync=True)
+    tf_values = List().tag(sync=True)
