@@ -66,8 +66,8 @@ class NPM(Command):
     node_modules = os.path.join(node_root, 'node_modules')
 
     targets = [
-        os.path.join(here, 'jupyter-widget-transferfunction', 'static', 'extension.js'),
-        os.path.join(here, 'jupyter-widget-transferfunction', 'static', 'index.js')
+        os.path.join(here, 'jupyter_widget_transferfunction', 'static', 'extension.js'),
+        os.path.join(here, 'jupyter_widget_transferfunction', 'static', 'index.js')
     ]
 
     def initialize_options(self):
@@ -121,22 +121,22 @@ class NPM(Command):
         update_package_data(self.distribution)
 
 version_ns = {}
-with open(os.path.join(here, 'jupyter-widget-transferfunction', '_version.py')) as f:
+with open(os.path.join(here, 'jupyter_widget_transferfunction', '_version.py')) as f:
     exec(f.read(), {}, version_ns)
 
 setup_args = {
-    'name': 'jupyter-widget-transferfunction',
+    'name': 'jupyter_widget_transferfunction',
     'version': version_ns['__version__'],
     'description': 'A transfer function widget for Jupyter',
     'long_description': LONG_DESCRIPTION,
     'include_package_data': True,
     'data_files': [
-        ('share/jupyter/nbextensions/jupyter-widget-transferfunction', [
-            'jupyter-widget-transferfunction/static/extension.js',
-            'jupyter-widget-transferfunction/static/index.js',
-            'jupyter-widget-transferfunction/static/index.js.map',
+        ('share/jupyter/nbextensions/jupyter_widget_transferfunction', [
+            'jupyter_widget_transferfunction/static/extension.js',
+            'jupyter_widget_transferfunction/static/index.js',
+            'jupyter_widget_transferfunction/static/index.js.map',
         ],),
-        ('etc/jupyter/nbconfig/notebook.d/' ,['jupyter-widget-transferfunction.json'])
+        ('etc/jupyter/nbconfig/notebook.d/' ,['jupyter_widget_transferfunction.json'])
     ],
     'install_requires': [
         'ipywidgets>=7.0.0',
@@ -152,7 +152,7 @@ setup_args = {
 
     'author': 'Matthew Turk',
     'author_email': 'matthewturk@gmail.com',
-    'url': 'https://github.com/data-exp-lab/jupyter-widget-transferfunction',
+    'url': 'https://github.com/data-exp-lab/jupyter_widget_transferfunction',
     'keywords': [
         'ipython',
         'jupyter',
