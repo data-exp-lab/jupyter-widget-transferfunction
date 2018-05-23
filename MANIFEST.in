@@ -1,0 +1,2 @@
+recursive-include jupyter-widget-transferfunction/static *.*
+include jupyter-widget-transferfunction.json
