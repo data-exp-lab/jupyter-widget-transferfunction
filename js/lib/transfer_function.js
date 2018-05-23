@@ -36,13 +36,27 @@ var TransferFunctionEditorView = widgets.DOMWidgetView.extend({
         var wrapper = this.el;
         this.wrapper = document.createElement('div');
         $(this.wrapper)
-          .css("max-width", "100%")
-          .css("min-width", "100px")
+          .css("max-width", "500px")
+          .css("min-width", "500px")
           .css("min-height", "200px")
+          .css("max-height", "200px")
           .css("display", "block")
           .css("position", "relative")
           .appendTo(this.el);
-        options = { parent: this.wrapper, container: this.wrapper };
+        options = {
+          parent: this.wrapper,
+          container: this.wrapper,
+          panel: {
+            showTFResult: true,
+            resultBackground: 'rgb(230,230,230)',
+            background:	'linear-gradient(to top, rgb(212,228,239) 30%, rgb(134,174,204) 100%)',
+            border:	'3px solid rgba(134,174,204, 0.2)',
+            colorScheme: 'light',
+            width: 500,
+            height: 180,
+            resultHeight: 20
+          }
+        };
         this.tf_panel = new tfpanel.TF_panel(options);
         this.tf_panel.draw();
     },
