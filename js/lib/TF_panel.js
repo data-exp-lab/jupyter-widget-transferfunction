@@ -32,31 +32,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/**
 	 * @author afruehstueck
      * Original package: https://github.com/afruehstueck/afruehstueck.github.io
+     * Minor modifications by Matthew Turk
 	 */
 
 	'use strict';
 
-/**
- * convenience function (added to Math) for restricting range of a value
- * @param value			input value to be clamped
- * @param min			minimum output value
- * @param max			maximum output value
- * @returns {number}	clamped value
- */
-Math.clamp = function( value, min, max ) { return Math.min( Math.max( min, value ), max ); };
-
-/**
- * interpolate between array elements in arrays a and b
- * t is percentage of a in interpolation
- */
-Math.interpolate = function( a, b, t ) {
-	if( Array.isArray( a ) && Array.isArray( b ) && a.length === b.length ) {
-		return a.map( function( _, i ) { return a[ i ] * ( 1 - t ) + b[ i ] * t; } );
-	} else {
-		return a * ( 1 - t ) + b * t;
-	}
-};
-
+var TF_UI = require('./TF_UI.js');
+var CP_widget = require('./CP_widget.js');
 
 	/**
 	 * TF_panel is the base class for the transfer function panel
@@ -77,7 +59,7 @@ Math.interpolate = function( a, b, t ) {
 
 		var collapsiblePanel;
 		if( this.options.panel.isCollapsible ) {
-			collapsiblePanel = new Panel( { container: container } );
+			collapsiblePanel = new TF_UI.Panel( { container: container } );
 			collapsiblePanel.dom.id = 'tf-collapsible';
 			collapsiblePanel.dom.className += ' unselectable';
 			collapsiblePanel.dom.style.position = 'absolute';
@@ -96,14 +78,14 @@ Math.interpolate = function( a, b, t ) {
 			collapsiblePanel.dom.appendChild( collapsibleText );
 		}
 		//parent dom element of TF panel
-		var panel = new Panel( { container: container } );
+		var panel = new TF_UI.Panel( { container: container } );
 
 		if( this.options.panel.isCollapsible ) {
 			collapsiblePanel.dom.onclick = panel.toggle.bind( panel );
 		}
 
 		if( this.options.panel.showTFResult ) {
-			this.tfResult = new Panel( { container: container } );
+			this.tfResult = new TF_UI.Panel( { container: container } );
 			this.tfResult.dom.style.position = 'absolute';
 			this.tfResult.dom.style.background = options.panel.resultBackground;
 			this.tfResult.dom.style.border = options.panel.border;
@@ -142,8 +124,8 @@ Math.interpolate = function( a, b, t ) {
 		this.panelContextMenu = this.addContextMenu( this.options.gradientPresets );
 
 		//create SVG context for interaction elements
-		var svgContext = document.createElementNS( SVG.svgNS, 'svg' );
-		svgContext.setAttribute( 'xmlns', SVG.svgNS );
+		var svgContext = document.createElementNS( TF_UI.SVG.svgNS, 'svg' );
+		svgContext.setAttribute( 'xmlns', TF_UI.SVG.svgNS );
 		svgContext.setAttribute( 'xmlns:xlink', 'http://www.w3.org/1999/xlink' );
 		svgContext.setAttribute( 'width', panel.width );
 		svgContext.setAttribute( 'height', panel.height );
@@ -168,7 +150,7 @@ Math.interpolate = function( a, b, t ) {
 		//add color picker
 		options.colorpicker.container = panel.dom;
 		options.colorpicker.colorScheme = this.options.panel.colorScheme;
-		var cp_widget = new CP_widget( this.options.colorpicker );
+		var cp_widget = new CP_widget.CP_widget( this.options.colorpicker );
 		panel.cp_widget = cp_widget;
 
 		this.draw();
@@ -370,7 +352,7 @@ Math.interpolate = function( a, b, t ) {
 
 		panelContextMenu.addItems( menuObjects );
 		function showContextMenu( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, container );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, container );
 
 			self.panelContextMenu.showAt( mouse.x, mouse.y );
 
@@ -470,7 +452,7 @@ Math.interpolate = function( a, b, t ) {
 
 		//small indicator for histogram tracing
 		if( !this.histogramHover ) {
-			this.histogramHover = SVG.createCircle( this.panel.svgContext, 0, 0, 'none', 4, '#666' );
+			this.histogramHover = TF_UI.SVG.createCircle( this.panel.svgContext, 0, 0, 'none', 4, '#666' );
 			this.histogramHover.setAttribute( 'visibility', 'hidden' );
 			this.histogramHover.class = 'tooltip';
 		}
@@ -485,7 +467,7 @@ Math.interpolate = function( a, b, t ) {
 
 		//show tooltips on hover over tf panel
 		this.panel.svgContext.addEventListener( 'mousemove', function ( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, self.panel.dom );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, self.panel.dom );
 
 			var binWidth = this.canvas.width / histogram.numBins;
 			var bin = Math.floor( mouse.x / binWidth );
@@ -812,7 +794,7 @@ Math.interpolate = function( a, b, t ) {
 		options.controlPoints = [];
 		for( var index = 0; index < this.controlPoints.length; index++ ) {
 			var controlPoint = this.controlPoints[ index ];
-			options.controlPoints.push( { value: controlPoint.value, alpha: controlPoint.alpha, color: Color.RGBtoHEX( controlPoint.color ) } );
+			options.controlPoints.push( { value: controlPoint.value, alpha: controlPoint.alpha, color: CP_widget.Color.RGBtoHEX( controlPoint.color ) } );
 		}
 		return options;
 	};
@@ -847,7 +829,7 @@ Math.interpolate = function( a, b, t ) {
 	TF_widget.prototype.createAnchor = function() {
 		var parent = this.parent;
 		var container = this.container;
-		var anchor = SVG.createRect( this.parent.svgContext, 0, 0, this.options.handle.color, this.options.handle.size, this.options.handle.size, this.options.handle.lineColor, this.options.handle.lineWidth );
+		var anchor = TF_UI.SVG.createRect( this.parent.svgContext, 0, 0, this.options.handle.color, this.options.handle.size, this.options.handle.size, this.options.handle.lineColor, this.options.handle.lineWidth );
 		anchor.addClass( 'handle' );
 		this.anchor = anchor;
 
@@ -860,7 +842,7 @@ Math.interpolate = function( a, b, t ) {
 		function moveAnchor( e ) {
 			e.preventDefault();
 			e.stopPropagation();
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, parent.dom );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, parent.dom );
 
 			//restrict area of movement for control points
 			//todo this is not handled very well yet
@@ -916,7 +898,7 @@ Math.interpolate = function( a, b, t ) {
 		}
 
 		function showContextMenu( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, container );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, container );
 
 			//create context menus for rightclick interaction
 
@@ -951,7 +933,7 @@ Math.interpolate = function( a, b, t ) {
 		var self = this;
 
 		var parent = this.parent;
-		var outline = SVG.createPolyline( this.parent.svgContext, null, this.canvas.width, this.canvas.height, 'value', 'alpha', true, this.options.lineColor, this.options.lineWidth );
+		var outline = TF_UI.SVG.createPolyline( this.parent.svgContext, null, this.canvas.width, this.canvas.height, 'value', 'alpha', true, this.options.lineColor, this.options.lineWidth );
 		outline.addClass( 'handle' );
 		this.outline = outline;
 
@@ -959,7 +941,7 @@ Math.interpolate = function( a, b, t ) {
 		 * Add control point on shift+click or double-click on outline
 		 */
 		function onOutlineClick( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, parent.dom );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, parent.dom );
 
 			var value = mouse.x / parent.width;
 			var alpha = 1.0 - ( mouse.y / parent.height );
@@ -968,13 +950,13 @@ Math.interpolate = function( a, b, t ) {
 
 			var neighbors = self.findNeighborControlPoints( value );
 
-			var leftColor = Color.parseColor( neighbors.left.color ),
-				rightColor = Color.parseColor( neighbors.right.color );
+			var leftColor = CP_widget.Color.parseColor( neighbors.left.color ),
+				rightColor = CP_widget.Color.parseColor( neighbors.right.color );
 
 			var pct = ( value - neighbors.left.value ) / ( neighbors.right.value - neighbors.left.value );
 			var rgb = Math.interpolate( [ leftColor.r, leftColor.g, leftColor.b ], [ rightColor.r, rightColor.g, rightColor.b ], pct );
 
-			var color = Color.RGBtoHEX( rgb[ 0 ], rgb[ 1 ], rgb[ 2 ] );
+			var color = CP_widget.Color.RGBtoHEX( rgb[ 0 ], rgb[ 1 ], rgb[ 2 ] );
 
 			self.addControlPoint( value, alpha, color );
 		}
@@ -1008,10 +990,10 @@ Math.interpolate = function( a, b, t ) {
 		var self = this;
 		var parent = this.parent;
 
-		var handleRight = SVG.createVLine( this.parent.svgContext, null, this.canvas.width, this.canvas.height, true, this.options.lineColor, this.options.lineWidth );
+		var handleRight = TF_UI.SVG.createVLine( this.parent.svgContext, null, this.canvas.width, this.canvas.height, true, this.options.lineColor, this.options.lineWidth );
 		handleRight.addClass( 'handle' );
 		handleRight.handleType = 'right';
-		var handleLeft = SVG.createVLine( this.parent.svgContext, null, this.canvas.width, this.canvas.height, true, this.options.lineColor, this.options.lineWidth );
+		var handleLeft = TF_UI.SVG.createVLine( this.parent.svgContext, null, this.canvas.width, this.canvas.height, true, this.options.lineColor, this.options.lineWidth );
 		handleLeft.addClass( 'handle' );
 		handleLeft.handleType = 'left';
 		this.handles = {};
@@ -1046,7 +1028,7 @@ Math.interpolate = function( a, b, t ) {
 		 * update control points by scaling range of points when dragging vertical edge of widget
 		 */
 		function onHandlesMouseMove( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, parent.dom );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, parent.dom );
 
 			var value = mouse.x / parent.width;
 			var alpha = 1.0 - ( mouse.y / parent.height );
@@ -1106,10 +1088,10 @@ Math.interpolate = function( a, b, t ) {
 			value = value.value;
 		}
 
-		var controlPoint = { value: value, alpha: alpha, color: Color.parseColor( color ) };
+		var controlPoint = { value: value, alpha: alpha, color: CP_widget.Color.parseColor( color ) };
 
 		// circular handle for controlpoint
-		var handle = SVG.createCircle( parent.svgContext, value * this.canvas.width, this.canvas.height - alpha * this.canvas.height, Color.RGBtoHEX( controlPoint.color ), this.options.handle.radius, this.options.handle.lineColor, this.options.handle.lineWidth );
+		var handle = TF_UI.SVG.createCircle( parent.svgContext, value * this.canvas.width, this.canvas.height - alpha * this.canvas.height, CP_widget.Color.RGBtoHEX( controlPoint.color ), this.options.handle.radius, this.options.handle.lineColor, this.options.handle.lineWidth );
 		handle.addClass( 'handle' );
 
 		var width = parent.width,
@@ -1126,7 +1108,7 @@ Math.interpolate = function( a, b, t ) {
 
 		/* moves control point handles on mousemove while mouse down */
 		function moveHandle( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, this.container );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, this.container );
 
 			//restrict area of movement for control points
 			//todo this is not handled very well yet
@@ -1164,14 +1146,14 @@ Math.interpolate = function( a, b, t ) {
 			e.preventDefault();
 			console.log( 'request colorpicker' );
 
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, container );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, container );
 
 			parent.cp_widget.showAt( mouse.x, mouse.y, handle );
 			parent.cp_widget.color.registerCallback( handle, function( col ) {
-				var colHex = Color.RGBtoHEX( col.rgb );
+				var colHex = CP_widget.Color.RGBtoHEX( col.rgb );
 				handle.setFillColor( colHex );
 				//slightly messy: create new color object instead of reusing (will cause errors when color is changed)
-				controlPoint.color = Color.RGB( col.rgb.r, col.rgb.g, col.rgb.b );
+				controlPoint.color = CP_widget.Color.RGB( col.rgb.r, col.rgb.g, col.rgb.b );
 				drawWidgetBound();
 			} );
 			parent.cp_widget.color.set( controlPoint.color, handle );
@@ -1194,7 +1176,7 @@ Math.interpolate = function( a, b, t ) {
 		} );
 
 		function showContextMenu( e ) {
-			var mouse = UI.getRelativePosition( e.clientX, e.clientY, container );
+			var mouse = TF_UI.UI.getRelativePosition( e.clientX, e.clientY, container );
 
 			var colorScheme = self.options.colorScheme || 'dark';
 			var handleContextMenu = new ContextMenu( { container: container, colorScheme: colorScheme } );
@@ -1404,7 +1386,7 @@ Math.interpolate = function( a, b, t ) {
 		if( options === undefined ) options = {};
 		var container = options.container || document.body;
 		this.container = container;
-		var panel = new Panel( { container: container } );
+		var panel = new TF_UI.Panel( { container: container } );
 		panel.addClass( 'menu' );
 		panel.addClass( 'popup' );
 		panel.addClass( options.colorScheme );
@@ -1538,3 +1520,7 @@ Math.interpolate = function( a, b, t ) {
 	ContextMenu.prototype.hide = function() {
 		this.panel.hide();
 	};
+
+module.exports = {
+    TF_panel: TF_panel
+};

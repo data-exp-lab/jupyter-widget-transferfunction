@@ -1,6 +1,7 @@
 var widgets = require('@jupyter-widgets/base');
 var _ = require('lodash');
 var tfpanel = require('./TF_panel.js');
+var tfpanel_css = require('../css/ui.css');
 
 // Custom Model. Custom widgets models must at least provide default values
 // for model attributes, including
@@ -32,8 +33,18 @@ var TransferFunctionEditorModel = widgets.DOMWidgetModel.extend({
 // Custom View. Renders the widget model.
 var TransferFunctionEditorView = widgets.DOMWidgetView.extend({
     render: function() {
-        this.value_changed();
-        this.model.on('change:value', this.value_changed, this);
+        var wrapper = this.el;
+        this.wrapper = document.createElement('div');
+        $(this.wrapper)
+          .css("max-width", "100%")
+          .css("min-width", "100px")
+          .css("min-height", "200px")
+          .css("display", "block")
+          .css("position", "relative")
+          .appendTo(this.el);
+        options = { parent: this.wrapper, container: this.wrapper };
+        this.tf_panel = new tfpanel.TF_panel(options);
+        this.tf_panel.draw();
     },
 
     value_changed: function() {
